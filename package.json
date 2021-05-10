@@ -1,0 +1,18 @@
+{
+  "name": "hook-use-url",
+  "version": "1.0.2",
+  "description": "useUrl hook for easier URL reading & writing within ReactJS app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lukas Liesis",
+  "homepage": "https://github.com/liesislukas/hook-use-url",
+  "license": "MIT",
+  "dependencies": {
+    "connected-react-router": "^6.9.1",
+    "hook-use-previous": "^1.0.0",
+    "react": "^16.9.0",
+    "react-redux": "^7.2.4"
+  }
+}
