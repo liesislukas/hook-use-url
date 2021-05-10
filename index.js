@@ -1,5 +1,3 @@
-import {useEffect} from 'react';
-import {useState} from 'react';
 import {push, replace} from 'connected-react-router';
 import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
@@ -36,22 +34,14 @@ function index() {
   const dispatch = useDispatch();
   const routerState = useSelector((_state) => _state.router);
 
-  const [allVariables, setAllVariables] = useState({});
   const search = routerState && routerState.location && routerState.location.search
     ? routerState.location.search
     : '';
-  const previousSearch = usePrevious(search);
-
-  useEffect(() => {
-    if (search !== previousSearch) {
-      setAllVariables(queryString.parse(search));
-    }
-  }, [search, previousSearch]);
-
-  return {
+  const allVariables = queryString.parse(search);
+  const url = {
     get: ({variable}) => allVariables[variable] || null,
     arrayGet({variable}) {
-      let values = this.get({variable}) || [];
+      let values = url.get({variable}) || [];
       if (typeof values === 'string') {
         if (values) {
           values = [values];
@@ -75,7 +65,7 @@ function index() {
       });
     },
     remove: ({variable, doReturnUrl, doReplaceInsteadPush}) => {
-      const newVariables = [...allVariables];
+      const newVariables = {...allVariables};
       delete newVariables[variable];
       pushNewState({
         dispatch,
@@ -86,7 +76,7 @@ function index() {
       });
     },
     urlSetSeveral: ({pairs, doReturnUrl, path, doReplaceInsteadPush}) => {
-      const newVariables = [...allVariables];
+      const newVariables = {...allVariables};
       pairs.forEach((pair) => {
         newVariables[pair.variable] = pair.value;
       });
@@ -100,11 +90,11 @@ function index() {
       });
     },
     urlMultipleActions: ({setPairs, removeArray, arrayAddPairs, arrayRemovePairs, doReturnUrl, doReplaceInsteadPush}) => {
-      let newVariables = [...allVariables];
+      let newVariables = {...allVariables};
 
       if (arrayAddPairs && arrayAddPairs.length > 0) {
         arrayAddPairs.forEach((pair) => {
-          let values = this.arrayGet({variable: pair.variable});
+          let values = url.arrayGet({variable: pair.variable});
           if (values.includes(pair.value) === false) {
             values.push(pair.value);
             newVariables[pair.variable] = values;
@@ -115,7 +105,7 @@ function index() {
 
       if (arrayRemovePairs && arrayRemovePairs.length > 0) {
         arrayRemovePairs.forEach((pair) => {
-          let values = this.arrayGet({variable: pair.variable});
+          let values = url.arrayGet({variable: pair.variable});
           if (values.includes(pair.value)) {
             values = values.filter((x) => x !== pair.value);
             newVariables[pair.variable] = values;
@@ -146,7 +136,7 @@ function index() {
     setPath: ({path, keepQuery, removeArray, doReturnUrl, doReplaceInsteadPush}) => {
       let newVariables = [];
       if (keepQuery === true) {
-        newVariables = [...allVariables];
+        newVariables = {...allVariables};
         removeArray && removeArray.length > 0 && removeArray.forEach((r) => delete newVariables[r]);
       }
       pushNewState({
@@ -161,7 +151,7 @@ function index() {
     getPath: ({keepQuery, removeArray}) => {
       let newVariables = [];
       if (keepQuery === true) {
-        newVariables = [...allVariables];
+        newVariables = {...allVariables};
         removeArray && removeArray.length > 0 && removeArray.forEach((r) => delete newVariables[r]);
       }
       pushNewState({
@@ -171,8 +161,8 @@ function index() {
       });
     },
     arrayAdd: ({variable, value, doReturnUrl, doReplaceInsteadPush}) => {
-      const newVariables = [...allVariables];
-      let values = this.arrayGet({variable});
+      const newVariables = {...allVariables};
+      let values = url.arrayGet({variable});
       if (values.includes(value) === false) {
         values.push(value);
         newVariables[variable] = values;
@@ -186,8 +176,8 @@ function index() {
       });
     },
     arrayRemove: ({variable, value, doReturnUrl, doReplaceInsteadPush}) => {
-      const newVariables = [...allVariables];
-      let values = this.arrayGet({variable});
+      const newVariables = {...allVariables};
+      let values = url.arrayGet({variable});
       if (values.includes(value) === false) {
         values = values.filter((x) => x !== value);
         newVariables[variable] = values;
@@ -201,22 +191,22 @@ function index() {
       });
     },
     isArrayIncludes: ({variable, value}) => {
-      let values = this.arrayGet({variable});
+      let values = url.arrayGet({variable});
       return values.includes(value);
     },
     arrayToggle: ({variable, value, doReturnUrl, doReplaceInsteadPush}) => {
-      return this.isArrayIncludes({variable, value})
-        ? this.arrayRemove({variable, value, doReturnUrl, doReplaceInsteadPush})
-        : this.arrayAdd({variable, value, doReturnUrl, doReplaceInsteadPush});
+      return url.isArrayIncludes({variable, value})
+        ? url.arrayRemove({variable, value, doReturnUrl, doReplaceInsteadPush})
+        : url.arrayAdd({variable, value, doReturnUrl, doReplaceInsteadPush});
     },
     toggle({variable, value, doReturnUrl, doReplaceInsteadPush}) {
       // if value is in url and value is same - remove it, if it's not - add it.
-      return (this.get({variable}) === value)
-        ? this.remove({variable, doReturnUrl})
-        : this.set({variable, value, doReturnUrl});
+      return (url.get({variable}) === value)
+        ? url.remove({variable, doReturnUrl})
+        : url.set({variable, value, doReturnUrl});
     },
     removeSeveral: ({variables, doReturnUrl, doReplaceInsteadPush}) => {
-      const newVariables = [...allVariables];
+      const newVariables = {...allVariables};
       variables.forEach((variable) => {
         delete newVariables[variable];
       });
@@ -239,6 +229,8 @@ function index() {
       });
     },
   };
+
+  return url;
 }
 
 export default index;
