@@ -3,7 +3,6 @@ import {useState} from 'react';
 import {push, replace} from 'connected-react-router';
 import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
-import usePrevious from 'utils/usePrevious';
 
 const queryString = require('query-string');
 

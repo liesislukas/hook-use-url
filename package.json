@@ -1,6 +1,6 @@
 {
   "name": "hook-use-url",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "useUrl hook for easier URL reading & writing within ReactJS app",
   "main": "index.js",
   "scripts": {
@@ -8,8 +8,5 @@
   },
   "author": "Lukas Liesis",
   "homepage": "https://github.com/liesislukas/hook-use-url",
-  "license": "MIT",
-  "dependencies": {
-    "hook-use-previous": "^1.0.3"
-  }
+  "license": "MIT"
 }
