@@ -89,7 +89,7 @@ function index() {
         routerState,
       });
     },
-    urlMultipleActions: ({setPairs, removeArray, arrayAddPairs, arrayRemovePairs, doReturnUrl, doReplaceInsteadPush}) => {
+    multipleActions: ({setPairs, removeArray, arrayAddPairs, arrayRemovePairs, doReturnUrl, doReplaceInsteadPush}) => {
       let newVariables = {...allVariables};
 
       if (arrayAddPairs && arrayAddPairs.length > 0) {
