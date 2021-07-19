@@ -178,7 +178,7 @@ function index() {
     arrayRemove: ({variable, value, doReturnUrl, doReplaceInsteadPush}) => {
       const newVariables = {...allVariables};
       let values = url.arrayGet({variable});
-      if (values.includes(value) === false) {
+      if (values.includes(value) === true) {
         values = values.filter((x) => x !== value);
         newVariables[variable] = values;
       }
