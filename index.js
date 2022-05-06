@@ -91,23 +91,28 @@ function index() {
     },
     multipleActions: ({setPairs, removeArray, arrayAddPairs, arrayRemovePairs, doReturnUrl, doReplaceInsteadPush}) => {
       let newVariables = {...allVariables};
-      let values = url.arrayGet({variable: pair.variable});
-
+      let valuesMapModifyingNow = {};
       if (arrayAddPairs && arrayAddPairs.length > 0) {
         arrayAddPairs.forEach((pair) => {
-          if (values.includes(pair.value) === false) {
-            values.push(pair.value);
-            newVariables[pair.variable] = values;
+          if (typeof valuesMapModifyingNow[pair.variable] === "undefined") {
+            valuesMapModifyingNow[pair.variable] = url.arrayGet({variable: pair.variable});
           }
-          newVariables[pair.variable] = values;
+          if (valuesMapModifyingNow[pair.variable].includes(pair.value) === false) {
+            valuesMapModifyingNow[pair.variable].push(pair.value);
+            newVariables[pair.variable] = valuesMapModifyingNow[pair.variable];
+          }
+          newVariables[pair.variable] = valuesMapModifyingNow[pair.variable];
         });
       }
 
       if (arrayRemovePairs && arrayRemovePairs.length > 0) {
         arrayRemovePairs.forEach((pair) => {
-          if (values.includes(pair.value)) {
-            values = values.filter((x) => x !== pair.value);
-            newVariables[pair.variable] = values;
+          if (typeof valuesMapModifyingNow[pair.variable] === "undefined") {
+            valuesMapModifyingNow[pair.variable] = url.arrayGet({variable: pair.variable});
+          }
+          if (valuesMapModifyingNow[pair.variable].includes(pair.value)) {
+            valuesMapModifyingNow[pair.variable] = valuesMapModifyingNow[pair.variable].filter((x) => x !== pair.value);
+            newVariables[pair.variable] = valuesMapModifyingNow[pair.variable];
           }
         });
       }
