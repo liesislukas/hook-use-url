@@ -1,6 +1,6 @@
 {
   "name": "hook-use-url",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "useUrl hook for easier URL reading & writing within ReactJS app",
   "main": "index.js",
   "scripts": {

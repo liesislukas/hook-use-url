@@ -1,31 +1,31 @@
-import {push, replace} from 'connected-react-router';
-import {useSelector} from 'react-redux';
-import {useDispatch} from 'react-redux';
+import {push, replace} from "connected-react-router";
+import {useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 
-const queryString = require('query-string');
+const queryString = require("query-string");
 
 function pushNewState({dispatch, routerState, allVariables, doReturnUrl, path, doReplaceInsteadPush}) {
-  const replaceOrPush = doReplaceInsteadPush ? 'replace' : 'push';
+  const replaceOrPush = doReplaceInsteadPush ? "replace" : "push";
 
-  const pathname = typeof path === 'string' ? path
+  const pathname = typeof path === "string" ? path
     : routerState && routerState.location && routerState.location.pathname
       ? routerState.location.pathname
-      : '';
+      : "";
 
   const hash = routerState && routerState.location && routerState.location.hash
     ? routerState.location.hash
-    : '';
+    : "";
 
   const search = queryString.stringify(allVariables);
-  const url = `${pathname}${search ? `?${search}` : ''}${hash}`;
+  const url = `${pathname}${search ? `?${search}` : ""}${hash}`;
 
   if (doReturnUrl === true) {
     return url;
   }
-  if (replaceOrPush === 'push') {
+  if (replaceOrPush === "push") {
     return dispatch(push(url));
   }
-  if (replaceOrPush === 'replace') {
+  if (replaceOrPush === "replace") {
     return dispatch(replace(url));
   }
 }
@@ -36,13 +36,13 @@ function index() {
 
   const search = routerState && routerState.location && routerState.location.search
     ? routerState.location.search
-    : '';
+    : "";
   const allVariables = queryString.parse(search);
   const url = {
     get: ({variable}) => allVariables[variable] || null,
     arrayGet({variable}) {
       let values = url.get({variable}) || [];
-      if (typeof values === 'string') {
+      if (typeof values === "string") {
         if (values) {
           values = [values];
         } else {
@@ -91,10 +91,10 @@ function index() {
     },
     multipleActions: ({setPairs, removeArray, arrayAddPairs, arrayRemovePairs, doReturnUrl, doReplaceInsteadPush}) => {
       let newVariables = {...allVariables};
+      let values = url.arrayGet({variable: pair.variable});
 
       if (arrayAddPairs && arrayAddPairs.length > 0) {
         arrayAddPairs.forEach((pair) => {
-          let values = url.arrayGet({variable: pair.variable});
           if (values.includes(pair.value) === false) {
             values.push(pair.value);
             newVariables[pair.variable] = values;
@@ -105,7 +105,6 @@ function index() {
 
       if (arrayRemovePairs && arrayRemovePairs.length > 0) {
         arrayRemovePairs.forEach((pair) => {
-          let values = url.arrayGet({variable: pair.variable});
           if (values.includes(pair.value)) {
             values = values.filter((x) => x !== pair.value);
             newVariables[pair.variable] = values;
