@@ -1,240 +1,141 @@
-import {push, replace} from "connected-react-router";
-import {useSelector} from "react-redux";
-import {useDispatch} from "react-redux";
+import { useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const queryString = require("query-string");
+export default function useUrl() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-function pushNewState({dispatch, routerState, allVariables, doReturnUrl, path, doReplaceInsteadPush}) {
-  const replaceOrPush = doReplaceInsteadPush ? "replace" : "push";
+  class Url {
+    location = null;
+    navigate = null;
+    searchParams = null;
 
-  const pathname = typeof path === "string" ? path
-    : routerState && routerState.location && routerState.location.pathname
-      ? routerState.location.pathname
-      : "";
-
-  const hash = routerState && routerState.location && routerState.location.hash
-    ? routerState.location.hash
-    : "";
-
-  const search = queryString.stringify(allVariables);
-  const url = `${pathname}${search ? `?${search}` : ""}${hash}`;
-
-  if (doReturnUrl === true) {
-    return url;
+    constructor(location, navigate, searchParams) {
+      this.location = location;
+      this.navigate = navigate;
+      this.searchParams = searchParams;
+    }
   }
-  if (replaceOrPush === "push") {
-    return dispatch(push(url));
-  }
-  if (replaceOrPush === "replace") {
-    return dispatch(replace(url));
-  }
-}
 
-function index() {
-  const dispatch = useDispatch();
-  const routerState = useSelector((_state) => _state.router);
+  let url = new Url(location, navigate, searchParams);
 
-  const search = routerState && routerState.location && routerState.location.search
-    ? routerState.location.search
-    : "";
-  const allVariables = queryString.parse(search);
-  const url = {
-    get: ({variable}) => allVariables[variable] || null,
-    arrayGet({variable}) {
-      let values = url.get({variable}) || [];
-      if (typeof values === "string") {
-        if (values) {
-          values = [values];
-        } else {
-          values = [];
-        }
-      }
-      return values;
-    },
-    set: ({variable, value, path, doReturnUrl, doReplaceInsteadPush}) => {
-      pushNewState({
-        dispatch,
-        allVariables: {
-          ...allVariables,
-          [variable]: value,
-        },
-        doReturnUrl,
-        path,
-        doReplaceInsteadPush,
-        routerState,
-      });
-    },
-    remove: ({variable, doReturnUrl, doReplaceInsteadPush}) => {
-      const newVariables = {...allVariables};
-      delete newVariables[variable];
-      pushNewState({
-        dispatch,
-        allVariables: newVariables,
-        doReturnUrl,
-        doReplaceInsteadPush,
-        routerState,
-      });
-    },
-    urlSetSeveral: ({pairs, doReturnUrl, path, doReplaceInsteadPush}) => {
-      const newVariables = {...allVariables};
-      pairs.forEach((pair) => {
-        newVariables[pair.variable] = pair.value;
-      });
-      pushNewState({
-        dispatch,
-        allVariables: newVariables,
-        doReturnUrl,
-        path,
-        doReplaceInsteadPush,
-        routerState,
-      });
-    },
-    multipleActions: ({setPairs, removeArray, arrayAddPairs, arrayRemovePairs, doReturnUrl, doReplaceInsteadPush}) => {
-      let newVariables = {...allVariables};
-      let valuesMapModifyingNow = {};
-      if (arrayAddPairs && arrayAddPairs.length > 0) {
-        arrayAddPairs.forEach((pair) => {
-          if (typeof valuesMapModifyingNow[pair.variable] === "undefined") {
-            valuesMapModifyingNow[pair.variable] = url.arrayGet({variable: pair.variable});
-          }
-          if (valuesMapModifyingNow[pair.variable].includes(pair.value) === false) {
-            valuesMapModifyingNow[pair.variable].push(pair.value);
-            newVariables[pair.variable] = valuesMapModifyingNow[pair.variable];
-          }
-          newVariables[pair.variable] = valuesMapModifyingNow[pair.variable];
-        });
-      }
-
-      if (arrayRemovePairs && arrayRemovePairs.length > 0) {
-        arrayRemovePairs.forEach((pair) => {
-          if (typeof valuesMapModifyingNow[pair.variable] === "undefined") {
-            valuesMapModifyingNow[pair.variable] = url.arrayGet({variable: pair.variable});
-          }
-          if (valuesMapModifyingNow[pair.variable].includes(pair.value)) {
-            valuesMapModifyingNow[pair.variable] = valuesMapModifyingNow[pair.variable].filter((x) => x !== pair.value);
-            newVariables[pair.variable] = valuesMapModifyingNow[pair.variable];
-          }
-        });
-      }
-
-      if (setPairs && setPairs.length > 0) {
-        setPairs.forEach((pair) => {
-          newVariables[pair.variable] = pair.value;
-        });
-      }
-
-      if (removeArray && removeArray.length > 0) {
-        removeArray.forEach((_variable) => {
-          delete newVariables[_variable];
-        });
-      }
-
-      pushNewState({
-        dispatch,
-        allVariables: newVariables,
-        doReturnUrl,
-        doReplaceInsteadPush,
-        routerState,
-      });
-    },
-    setPath: ({path, keepQuery, removeArray, doReturnUrl, doReplaceInsteadPush}) => {
-      let newVariables = [];
-      if (keepQuery === true) {
-        newVariables = {...allVariables};
-        removeArray && removeArray.length > 0 && removeArray.forEach((r) => delete newVariables[r]);
-      }
-      pushNewState({
-        path,
-        dispatch,
-        allVariables: newVariables,
-        doReturnUrl,
-        doReplaceInsteadPush,
-        routerState,
-      });
-    },
-    getPath: ({keepQuery, removeArray}) => {
-      let newVariables = [];
-      if (keepQuery === true) {
-        newVariables = {...allVariables};
-        removeArray && removeArray.length > 0 && removeArray.forEach((r) => delete newVariables[r]);
-      }
-      pushNewState({
-        doReturnUrl: true,
-        allVariables: newVariables,
-        routerState,
-      });
-    },
-    arrayAdd: ({variable, value, doReturnUrl, doReplaceInsteadPush}) => {
-      const newVariables = {...allVariables};
-      let values = url.arrayGet({variable});
-      if (values.includes(value) === false) {
-        values.push(value);
-        newVariables[variable] = values;
-      }
-      pushNewState({
-        dispatch,
-        allVariables: newVariables,
-        doReturnUrl,
-        doReplaceInsteadPush,
-        routerState,
-      });
-    },
-    arrayRemove: ({variable, value, doReturnUrl, doReplaceInsteadPush}) => {
-      const newVariables = {...allVariables};
-      let values = url.arrayGet({variable});
-      if (values.includes(value) === true) {
-        values = values.filter((x) => x !== value);
-        newVariables[variable] = values;
-      }
-      pushNewState({
-        dispatch,
-        allVariables: newVariables,
-        doReturnUrl,
-        doReplaceInsteadPush,
-        routerState,
-      });
-    },
-    isArrayIncludes: ({variable, value}) => {
-      let values = url.arrayGet({variable});
-      return values.includes(value);
-    },
-    arrayToggle: ({variable, value, doReturnUrl, doReplaceInsteadPush}) => {
-      return url.isArrayIncludes({variable, value})
-        ? url.arrayRemove({variable, value, doReturnUrl, doReplaceInsteadPush})
-        : url.arrayAdd({variable, value, doReturnUrl, doReplaceInsteadPush});
-    },
-    toggle({variable, value, doReturnUrl, doReplaceInsteadPush}) {
-      // if value is in url and value is same - remove it, if it's not - add it.
-      return (url.get({variable}) === value)
-        ? url.remove({variable, doReturnUrl})
-        : url.set({variable, value, doReturnUrl});
-    },
-    removeSeveral: ({variables, doReturnUrl, doReplaceInsteadPush}) => {
-      const newVariables = {...allVariables};
-      variables.forEach((variable) => {
-        delete newVariables[variable];
-      });
-      pushNewState({
-        dispatch,
-        allVariables: newVariables,
-        doReturnUrl,
-        doReplaceInsteadPush,
-        routerState,
-      });
-    },
-    removeAll: ({doReturnUrl, path, doReplaceInsteadPush}) => {
-      pushNewState({
-        dispatch,
-        path,
-        allVariables: [],
-        doReturnUrl,
-        doReplaceInsteadPush,
-        routerState,
-      });
-    },
-  };
+  // let url = {
+  //   searchParams,
+  //   location,
+  //   navigate,
+  //
+  //   protocol: window?.location?.protocol,
+  //   domain: window?.location?.hostname,
+  //   domainWithPort: window?.location?.host,
+  //   port: window?.location?.port,
+  //   path: this?.location?.pathname || "/",
+  //   fragment: window?.location?.hash,
+  //
+  //   getUri: () => {
+  //     let _uriParts = [];
+  //     if (this.getProtocol()) {
+  //       _uriParts.push(`${this.getProtocol()}//`);
+  //     }
+  //     if (this.getDomainWithPort()) {
+  //       _uriParts.push(this.getDomainWithPort());
+  //     }
+  //     _uriParts.push(this.getUriWithoutDomain());
+  //     return _uriParts.join("");
+  //   },
+  //   getUriWithoutDomain: () => {
+  //     let _uriParts = [];
+  //     _uriParts.push(this.getPath() || "/");
+  //     if (this.getQuery() && !this.getFragment()) {
+  //       _uriParts.push(`${this.getQuery()}`);
+  //     }
+  //     if (!this.getQuery() && this.getFragment()) {
+  //       _uriParts.push(`#${this.getFragment()}`);
+  //     }
+  //     if (this.getQuery() && this.getFragment()) {
+  //       _uriParts.push(`?${this.getQuery()}#${this.getFragment()}`);
+  //     }
+  //     return _uriParts.join("");
+  //   },
+  //   getProtocol: () => this.protocol,
+  //   getDomain: () => this.domain,
+  //   getDomainWithPort: () => this.domainWithPort,
+  //   getPort: () => this.port,
+  //   getPath: () => this.path,
+  //   getQuery: () => this.searchParams.toString(),
+  //   getFragment: () => this.fragment,
+  //   get: (variable) => {
+  //     let result;
+  //     if (variable) {
+  //       let _result = this.searchParams.getAll(variable);
+  //       if (_result?.length === 1) {
+  //         result = _result[0];
+  //       } else if (_result?.length > 1) {
+  //         result = _result;
+  //       }
+  //     }
+  //     return result;
+  //   },
+  //   removeQuery: () => {
+  //     this.searchParams = new URLSearchParams({});
+  //     return this;
+  //   },
+  //   removeFragment: () => {
+  //     this.fragment = "";
+  //     return this;
+  //   },
+  //   removePath: () => {
+  //     this.path = "/";
+  //     return this;
+  //   },
+  //   setPath: (value) => {
+  //     this.path = value || "/";
+  //     return this;
+  //   },
+  //   set: (variable, value) => {
+  //     if (variable && typeof variable === "string") {
+  //       if (typeof value === "undefined") {
+  //         this.searchParams.delete(variable);
+  //       }
+  //
+  //       if (typeof value === "string") {
+  //         this.searchParams.set(value);
+  //       }
+  //
+  //       if (typeof value === "object" && Array.isArray(value)) {
+  //         this.searchParams.delete(variable);
+  //         if (value.length > 0) {
+  //           value.forEach((_value) => {
+  //             this.searchParams.append(variable, _value);
+  //           });
+  //         }
+  //       }
+  //     }
+  //     return this;
+  //   },
+  //   add: (variable, value) => {
+  //     if (variable && typeof variable === "string") {
+  //       let _current = this.searchParams.getAll(variable);
+  //       if (_current.includes(value) === false) {
+  //         this.searchParams.append(variable, value);
+  //       }
+  //     }
+  //     return this;
+  //   },
+  //   remove: (variable) => {
+  //     if (variable) {
+  //       this.searchParams.delete(variable);
+  //     }
+  //     return this;
+  //   },
+  //   push: () => {
+  //     navigate(this.getUriWithoutDomain(), { replace: false });
+  //   },
+  //   replace: () => {
+  //     navigate(this.getUriWithoutDomain(), { replace: true });
+  //   },
+  // };
 
   return url;
 }
-
-export default index;
