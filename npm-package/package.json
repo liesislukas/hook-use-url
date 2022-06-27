@@ -1,6 +1,18 @@
 {
   "name": "hook-use-url",
-  "version": "2.0.4",
+  "version": "2.0.5",
+  "keywords": [
+    "react-router",
+    "react router",
+    "react router v6",
+    "react",
+    "react url",
+    "react url hook",
+    "react router v6 url",
+    "url",
+    "react hook",
+    "url hook"
+  ],
   "description": "Easy manage of URL state withing ReactJS app with react-router v6",
   "main": "index.js",
   "scripts": {
