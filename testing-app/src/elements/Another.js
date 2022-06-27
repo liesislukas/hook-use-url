@@ -1,3 +1,9 @@
-export default function About () {
-  return <div>hi from About</div>
+import Layout from "../Layout";
+
+export default function Another() {
+  return (
+    <Layout>
+      <h1>hi from Another</h1>
+    </Layout>
+  );
 }
