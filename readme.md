@@ -1,6 +1,8 @@
 `npm i hook-use-url`
 
-Tested with react-router v6 and ReactJS v18
+> Tiny lib to easily use URL inside ReactJS App with React Router v6
+
+_Tested with react-router v6 and ReactJS v18_
 
 ## Overview
 
@@ -11,19 +13,20 @@ function MyComponent() {
   const url = useUrl();
 
   // get current url
-  url.get(); // https://example.com/some-path?a=b&arr=x&arr=y
+  url.getUri(); // https://example.com/some-path?a=b&arr=x&arr=y
   // get key's value from URL. Works with arrays too.
   const a = url.get('a'); // b
   const arr = url.get('arr'); // ["x", "y"]
 
   // update a to c & update URL & update browser's history with history.push
-  url.set({key: 'a', value: 'c'}).push();
+  url.set("a", "c").push();
   // update a to c & update URL & update browser's history with history.replace
-  url.set({key: 'a', value: 'c'}).replace();
+  url.set("a", "c").replace();
   // update a to c & return new URL without changing it and without changing browser's history
-  url.set({key: 'a', value: 'c'}).get();
+  url.set("a", "c").get();
+  // add several values for same variable and update browser's URL & create new history event
+  url.add("tag", "tag-1").add("tag", "tag-2").push()
 }
-
 ```
 
 ## API
@@ -32,23 +35,28 @@ function MyComponent() {
 - To update browser's URL & history after changes - use `.push()` or `.replace()`
 - When getting value, if it's not available, undefined is returned.
 
-| Function                               | Description                                                                                        | Sample Output                             |
-|----------------------------------------|----------------------------------------------------------------------------------------------------|-------------------------------------------|
-| `url.getUri()`                         | Get full URI                                                                                       | `https://example.come/some-path?x1=b#foo` |
-| `url.getPath()`                        | Get path                                                                                           | `/some-path`                              |
-| `url.getQuery()`                       | Get query                                                                                          | `x1=b`                                    |
-| `url.getFragment()`                    | Get fragment                                                                                       | `foo`, `undefined`                        |
-| `url.getDomain()`                      | Get domain                                                                                         | `example.com`                             |
-| `url.getProtocol()`                    | Get protocol                                                                                       | `https`                                   |
-| `url.get("x1")`                        | Get value of `x1`                                                                                  | `b`                                       |
-| `url.set("x1", "c").getUri()`          | Set value of `x1` to `c` and get new uri.                                                          | `https://example.come/some-path?x1=c#foo` | 
-| `url.set("x1", ["c", "d"]).getQuery()` | Set value of `x1` and get new query.                                                               | `x1=c&x1=d`                               | 
-| `url.add("x1", ["e"])`                 | If `x1` already has some value, add one more value. Otherwise just set `x1` to `e`                 | `url` object to chain more methods.       | 
-| `url.set("x1")`                        | Set `x1` value to `undefined`. Does same as `url.remove("x1")`                                     | `url` object to chain more methods.       | 
-| `url.remove("x1")`                     | Remove `x1` value if there is any.                                                                 | `url` object to chain more methods.       | 
-| `url.removeQuery()`                    | Remove query from URI                                                                              | `url` object to chain more methods.       | 
-| `url.removeFragment()`                 | Remove fragment from URI                                                                           | `url` object to chain more methods.       | 
-| `url.removePath()`                     | Remove path from URI                                                                               | `url` object to chain more methods.       | 
-| `url.push()`                           | Set URI at browser's address input and push history event to browser's history                     | undefined                                 | 
-| `url.replace()`                        | Set URI at browser's address input and replace current history event with new at browser's history | undefined                                 | 
+| Function                               | Description                                                                                         | Sample Output                             |
+|----------------------------------------|-----------------------------------------------------------------------------------------------------|-------------------------------------------|
+| `url.getProtocol()`                    | Get protocol                                                                                        | `https`                                   |
+| `url.getDomain()`                      | Get domain                                                                                          | `example.com`                             |
+| `url.getDomainWithPort()`              | Get domain with port                                                                                | `example.com:3000`                        |
+| `url.getPort()`                        | Get port                                                                                            | 3000                                      | 
+| `url.getPath()`                        | Get path                                                                                            | `/some-path`                              |
+| `url.getQuery()`                       | Get query                                                                                           | `x1=b`                                    |
+| `url.getFragment()`                    | Get fragment                                                                                        | `foo`                                     |
+| `url.getUri()`                         | Get full URI with everything                                                                        | `https://example.come/some-path?x1=b#foo` |
+| `url.getUri()`                         | Get full URI without protocol, domain, or port                                                      | `/some-path?x1=b#foo`                     |
+| `url.get(variable)`                    | Get value of `x1` from query `url.get("x1")`                                                        | `some-string-value`                       |
+| `url.removeQuery()`                    | Remove query from URI                                                                               | `url` object to chain more methods.       | 
+| `url.removeFragment()`                 | Remove fragment from URI                                                                            | `url` object to chain more methods.       | 
+| `url.removePath()`                     | Remove path from URI                                                                                | `url` object to chain more methods.       | 
+| `url.setPath(value, doKeepQuery)`      | Set path & either keep rest of query/fragment or not. Default is not. `url.setPath("/about", true)` | `url` object to chain more methods.       | 
+| `url.setFragment(value)`               | Set new value for fragment. May be any falsy value or string. `url.setFragment('title')`            | `url` object to chain more methods.       | 
+| `url.set(variable, value)`             | Set value of variable in url `url.set("x1", "y")`                                                   | `url` object to chain more methods.       | 
+| `url.add(variable, value)`             | Add one more value or set 1st value for the variable in url. `url.add("tag", "foo")`                | `url` object to chain more methods.       | 
+| `url.subtract(variable, value)`        | Subtract one value from the variable in url. `url.subtract("tag", "foo")`                           | `url` object to chain more methods.       | 
+| `url.delete(variable)`                 | Delete single or multiple values of the variable. `url.delete("tag", "foo")`                        | `url` object to chain more methods.       | 
+| `url.push()`                           | Set URI at browser's address input and push history event to browser's history                      | `url` object to chain more methods.       | 
+| `url.replace()`                        | Set URI at browser's address input and replace current history event with new at browser's history  | `url` object to chain more methods.       |
+
 

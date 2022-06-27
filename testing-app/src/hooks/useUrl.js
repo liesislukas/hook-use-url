@@ -188,10 +188,12 @@ export default function useUrl() {
 
     push() {
       navigate(this.getUriWithoutDomain(), { replace: false });
+      return this;
     }
 
     replace() {
       navigate(this.getUriWithoutDomain(), { replace: true });
+      return this;
     }
   }
 
