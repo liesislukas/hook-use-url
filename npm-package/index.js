@@ -100,6 +100,14 @@ export default function useUrl() {
       return result;
     }
 
+    getAll(variable) {
+      let result = [];
+      if (variable && typeof variable === "string") {
+        result = this.searchParams.getAll(variable);
+      }
+      return result;
+    }
+
     removeQuery() {
       this.searchParams = new URLSearchParams({});
       return this;
