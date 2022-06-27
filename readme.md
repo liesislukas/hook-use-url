@@ -28,7 +28,7 @@ function MyComponent() {
 
 ## API
 
-- You can chain several actions like so: `url.set("x1", "foo").set("x2", "foo")`
+- You can chain several actions like so: `url.set("x1", "foo").set("x2", "foo").push()`
 - To update browser's URL & history after changes - use `.push()` or `.replace()`
 - When getting value, if it's not available, undefined is returned.
 
