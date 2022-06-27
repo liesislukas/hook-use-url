@@ -1,7 +1,7 @@
 {
   "name": "hook-use-url",
-  "version": "1.0.11",
-  "description": "useUrl hook for easier URL reading & writing within ReactJS app",
+  "version": "2.0.1",
+  "description": "Easy manage of URL state withing ReactJS app with react-router v6",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
