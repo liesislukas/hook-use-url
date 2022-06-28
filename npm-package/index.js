@@ -108,8 +108,30 @@ export default function useUrl() {
       return result;
     }
 
-    removeQuery() {
+    removeQuery(variablesToKeep) {
+      variablesToKeep = variablesToKeep || [];
+      if (variablesToKeep) {
+        if (typeof variablesToKeep === "string") {
+          variablesToKeep = [variablesToKeep];
+        }
+      }
+
+      let valuesMap = {};
+      if (variablesToKeep?.length > 0) {
+        variablesToKeep.forEach((_variableToKeep) => {
+          valuesMap[_variableToKeep] = this.getAll(_variableToKeep);
+        });
+      }
       this.searchParams = new URLSearchParams({});
+
+      variablesToKeep.forEach((_variableToKeep) => {
+        if (valuesMap[_variableToKeep]) {
+          valuesMap[_variableToKeep].forEach((_value) => {
+            this.add(_variableToKeep, _value);
+          });
+        }
+      });
+
       return this;
     }
 
@@ -196,10 +218,12 @@ export default function useUrl() {
 
     push() {
       navigate(this.getUriWithoutDomain(), { replace: false });
+      return this;
     }
 
     replace() {
       navigate(this.getUriWithoutDomain(), { replace: true });
+      return this;
     }
   }
 

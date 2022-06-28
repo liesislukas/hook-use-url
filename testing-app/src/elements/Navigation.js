@@ -86,6 +86,27 @@ export default function Navigation() {
         >
           removeQuery
         </button>
+        <button
+          onClick={() => {
+            url.set("x1", "y1").push();
+          }}
+        >
+          add x1
+        </button>
+        <button
+          onClick={() => {
+            url.set("x2", "y2").push();
+          }}
+        >
+          add x2
+        </button>
+        <button
+          onClick={() => {
+            url.removeQuery(["x1"]).push();
+          }}
+        >
+          remove all but x1
+        </button>
       </div>
 
       <div style={{ padding: 12, margin: "12px 0", background: "#999999" }}>
