@@ -1,6 +1,6 @@
 {
   "name": "hook-use-url",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "keywords": [
     "react-router",
     "react router",
@@ -23,7 +23,7 @@
     "url hook",
     "custom hook"
   ],
-  "description": "Easy manage of URL state withing ReactJS app with react-router v6",
+  "description": "Easy manage of URL state in ReactJS app with react-router v6",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
