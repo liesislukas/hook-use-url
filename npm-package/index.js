@@ -8,8 +8,6 @@ export default function useUrl() {
   const [searchParams] = useSearchParams();
 
   class Url {
-    location = null;
-    navigate = null;
     searchParams = null;
 
     protocol = "";
@@ -19,17 +17,43 @@ export default function useUrl() {
     path = "/";
     fragment = "";
 
-    constructor(location, navigate, searchParams) {
-      this.location = location;
-      this.navigate = navigate;
+    constructor(
+      searchParams,
+      protocol,
+      domain,
+      domainWithPort,
+      port,
+      path,
+      fragment
+    ) {
       this.searchParams = searchParams;
 
-      this.protocol = window?.location?.protocol;
-      this.domain = window?.location?.hostname;
-      this.domainWithPort = window?.location?.host;
-      this.port = window?.location?.port;
-      this.path = this?.location?.pathname || "/";
-      this.fragment = window?.location?.hash;
+      this.protocol = protocol || window?.location?.protocol;
+      this.domain = domain || window?.location?.hostname;
+      this.domainWithPort = domainWithPort || window?.location?.host;
+      this.port = port || window?.location?.port;
+      this.path = path || window?.location?.pathname || "/";
+      this.fragment = fragment || window?.location?.hash;
+    }
+
+    __clone(
+      searchParams,
+      protocol,
+      domain,
+      domainWithPort,
+      port,
+      path,
+      fragment
+    ) {
+      return new Url(
+        searchParams || this.searchParams,
+        protocol || this.protocol,
+        domain || this.domain,
+        domainWithPort || this.domainWithPort,
+        port || this.port,
+        path || this.path,
+        fragment || this.fragment
+      );
     }
 
     getProtocol() {
@@ -109,6 +133,7 @@ export default function useUrl() {
     }
 
     removeQuery(variablesToKeep) {
+      let _new = this.__clone();
       variablesToKeep = variablesToKeep || [];
       if (variablesToKeep) {
         if (typeof variablesToKeep === "string") {
@@ -119,101 +144,111 @@ export default function useUrl() {
       let valuesMap = {};
       if (variablesToKeep?.length > 0) {
         variablesToKeep.forEach((_variableToKeep) => {
-          valuesMap[_variableToKeep] = this.getAll(_variableToKeep);
+          valuesMap[_variableToKeep] = _new.getAll(_variableToKeep);
         });
       }
-      this.searchParams = new URLSearchParams({});
+
+      _new.searchParams = new URLSearchParams({});
 
       variablesToKeep.forEach((_variableToKeep) => {
         if (valuesMap[_variableToKeep]) {
           valuesMap[_variableToKeep].forEach((_value) => {
-            this.add(_variableToKeep, _value);
+            _new = _new.add(_variableToKeep, _value);
           });
         }
       });
 
-      return this;
+      return _new;
     }
 
     removeFragment() {
-      this.fragment = "";
-      return this;
+      let _new = this.__clone();
+      _new.fragment = "";
+      return _new;
     }
 
     removePath() {
-      this.path = "/";
-      return this;
+      let _new = this.__clone();
+      _new.path = "";
+      return _new;
     }
 
     setPath(value, doKeepQuery) {
+      let _new = this.__clone();
       if (doKeepQuery !== true) {
-        this.removeQuery();
-        this.removeFragment();
+        _new = _new.removeQuery();
+        _new = _new.removeFragment();
       }
-      this.path = value || "/";
-      return this;
+      _new.path = value || "/";
+      return _new;
     }
 
     setFragment(value) {
+      let _new = this.__clone();
       value = value || "";
       if (value.slice(0, 1) !== "#") {
         value = `#${value}`;
       }
-      this.fragment = value || "";
-      return this;
+      _new.fragment = value;
+      return _new;
     }
 
     set(variable, value) {
+      let _new = this.__clone();
+
       if (variable) {
         if (value === null) {
           value = undefined;
         }
 
         if (typeof value === "undefined") {
-          this.searchParams.delete(variable);
+          _new.searchParams.delete(variable);
         } else if (typeof value === "string") {
-          this.searchParams.set(variable, value);
+          _new.searchParams.set(variable, value);
         } else if (typeof value === "object" && Array.isArray(value)) {
-          this.searchParams.delete(variable);
+          _new.searchParams.delete(variable);
           if (value.length > 0) {
             value.forEach((_value) => {
-              this.searchParams.append(variable, _value);
+              _new.searchParams.append(variable, _value);
             });
           }
         } else {
-          this.searchParams.set(variable, JSON.stringify(value));
+          _new.searchParams.set(variable, JSON.stringify(value));
         }
       }
-      return this;
+      return _new;
     }
 
     add(variable, value) {
+      let _new = this.__clone();
       if (variable && typeof variable === "string") {
-        let _current = this.searchParams.getAll(variable);
+        let _current = _new.searchParams.getAll(variable);
         if (_current.includes(value) === false) {
-          this.searchParams.append(variable, value);
+          _new.searchParams.append(variable, value);
         }
       }
-      return this;
+      return _new;
     }
 
     subtract(variable, value) {
+      let _new = this.__clone();
       if (variable) {
-        let _current = this.searchParams.getAll(variable);
-        this.searchParams.delete(variable);
+        let _current = _new.searchParams.getAll(variable);
+        _new.searchParams.delete(variable);
         _current = _current.filter((x) => x !== value);
         if (_current.length > 0) {
-          _current.forEach((x) => this.searchParams.append(variable, x));
+          _current.forEach((x) => _new.searchParams.append(variable, x));
         }
       }
-      return this;
+      return _new;
     }
 
     delete(variable) {
+      let _new = this.__clone();
       if (variable) {
-        this.searchParams.delete(variable);
+        _new.searchParams.delete(variable);
       }
-      return this;
+      return _new;
     }
 
     push() {
@@ -227,5 +262,5 @@ export default function useUrl() {
     }
   }
 
-  return new Url(location, navigate, searchParams);
+  return new Url(searchParams);
 }

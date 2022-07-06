@@ -47,17 +47,17 @@ function MyComponent() {
 | `url.getFragment()`                | Get fragment                                                                                        | `foo`                                     |
 | `url.getUri()`                     | Get full URI with everything                                                                        | `https://example.come/some-path?x1=b#foo` |
 | `url.getUri()`                     | Get full URI without protocol, domain, or port                                                      | `/some-path?x1=b#foo`                     |
-| `url.get(variable)`               | Get value of `x1` from query `url.get("x1")`                                                        | `some-string-value`                       |
-| `url.getAll(variable)`            | Get values of `x1` from query. Always returns an array. `url.getAll("x1")`                          | `[]`, `["value"]`, `["a", "b"]`            |
+| `url.get(variable)`                | Get value of `x1` from query `url.get("x1")`                                                        | `some-string-value`                       |
+| `url.getAll(variable)`             | Get values of `x1` from query. Always returns an array. `url.getAll("x1")`                          | `[]`, `["value"]`, `["a", "b"]`            |
 | `url.removeQuery(variablesToKeep)` | Remove query from URI. May pass in _optional_ array of variables to keep: `url.removeQuery(["x1"])` | `url` object to chain more methods.       | 
 | `url.removeFragment()`             | Remove fragment from URI                                                                            | `url` object to chain more methods.       | 
 | `url.removePath()`                 | Remove path from URI                                                                                | `url` object to chain more methods.       | 
-| `url.setPath(value, doKeepQuery)` | Set path & either keep rest of query/fragment or not. Default is not. `url.setPath("/about", true)` | `url` object to chain more methods.       | 
-| `url.setFragment(value)`          | Set new value for fragment. May be any falsy value or string. `url.setFragment('title')`            | `url` object to chain more methods.       | 
-| `url.set(variable, value)`       | Set value of variable in url `url.set("x1", "y")`                                                   | `url` object to chain more methods.       | 
-| `url.add(variable, value)`       | Add one more value or set 1st value for the variable in url. `url.add("tag", "foo")`                | `url` object to chain more methods.       | 
-| `url.subtract(variable, value)`  | Subtract one value from the variable in url. `url.subtract("tag", "foo")`                           | `url` object to chain more methods.       | 
-| `url.delete(variable)`            | Delete single or multiple values of the variable. `url.delete("tag", "foo")`                        | `url` object to chain more methods.       | 
+| `url.setPath(value, doKeepQuery)`  | Set path & either keep rest of query/fragment or not. Default is not. `url.setPath("/about", true)` | `url` object to chain more methods.       | 
+| `url.setFragment(value)`           | Set new value for fragment. May be any falsy value or string. `url.setFragment('title')`            | `url` object to chain more methods.       | 
+| `url.set(variable, value)`         | Set value of variable in url `url.set("x1", "y")`                                                   | `url` object to chain more methods.       | 
+| `url.add(variable, value)`         | Add one more value or set 1st value for the variable in url. `url.add("tag", "foo")`                | `url` object to chain more methods.       | 
+| `url.subtract(variable, value)`    | Subtract one value from the variable in url. `url.subtract("tag", "foo")`                           | `url` object to chain more methods.       | 
+| `url.delete(variable)`             | Delete single or multiple values of the variable. `url.delete("tag", "foo")`                        | `url` object to chain more methods.       | 
 | `url.push()`                       | Set URI at browser's address input and push history event to browser's history                      | `url` object to chain more methods.       | 
 | `url.replace()`                    | Set URI at browser's address input and replace current history event with new at browser's history  | `url` object to chain more methods.       |
 

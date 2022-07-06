@@ -4,6 +4,7 @@ export default function Navigation() {
   const url = useUrl();
 
   const tags = url.get("tag");
+
   return (
     <div>
       <div>getProtocol: {url.getProtocol()}</div>
@@ -12,6 +13,9 @@ export default function Navigation() {
       <div>getPort: {url.getPort()}</div>
       <div>getPath: {url.getPath()}</div>
       <div>getQuery: {url.getQuery()}</div>
+      <div>_a getUri: {_a.getUri()}</div>
+      <div>_b getUri: {_b.getUri()}</div>
+      <div>_c getUri: {_c.getUri()}</div>
       <div>getFragment: {url.getFragment()}</div>
       <div>getUri: {url.getUri()}</div>
       <div>getUriWithoutDomain: {url.getUriWithoutDomain()}</div>
